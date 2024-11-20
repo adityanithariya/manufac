@@ -2,17 +2,12 @@ import "@mantine/core/styles.css";
 import { MantineProvider, Table } from "@mantine/core";
 import { theme } from "./theme";
 import dataset from "./dataset.json";
-
-interface IData {
-	Country: string;
-	Year: string;
-	cropName: string;
-	cropProduction: number;
-	yieldOfCrops: number;
-	areaUnderCultivation: number;
-}
+import type { IData } from "./types";
+import getProductionAnalysis from "./utils/getProductionAnalysis";
+import getCropAnalysis from "./utils/getCropAnalysis";
 
 export default function App() {
+	// Data Preparation
 	const data: IData[] = dataset.map((item) => {
 		const {
 			Country,
@@ -31,73 +26,9 @@ export default function App() {
 			areaUnderCultivation: Number(areaUnderCultivation),
 		};
 	});
-	const productionAnalytics = data.reduce(
-		(
-			acc: {
-				[year: string]: {
-					maxCrop?: string;
-					minCrop?: string;
-					maxProduction: number;
-					minProduction: number;
-				};
-			},
-			item,
-		) => {
-			const { Year, cropName, cropProduction } = item;
-			if (!acc?.[Year]) {
-				acc[Year] = {
-					maxProduction: 0,
-					minProduction: Number.MAX_VALUE,
-				};
-			}
-			if (acc?.[Year]?.maxProduction < cropProduction)
-				acc[Year] = {
-					...acc[Year],
-					maxCrop: cropName,
-					maxProduction: cropProduction,
-				};
-			if (acc?.[Year]?.minProduction > cropProduction)
-				acc[Year] = {
-					...acc[Year],
-					minCrop: cropName,
-					minProduction: cropProduction,
-				};
-			return acc;
-		},
-		{},
-	);
-	const cropAnalytics = data.reduce(
-		(
-			acc: {
-				[crop: string]: {
-					cropCount: number;
-					averageYield: number;
-					averageCultivationArea: number;
-				};
-			},
-			item,
-		) => {
-			const { cropName, yieldOfCrops, areaUnderCultivation } = item;
-			if (!acc?.[cropName])
-				acc[cropName] = {
-					cropCount: 0,
-					averageYield: 0,
-					averageCultivationArea: 0,
-				};
-
-			const { cropCount, averageYield, averageCultivationArea } = acc[cropName];
-			acc[cropName] = {
-				cropCount: cropCount + 1,
-				averageYield:
-					(averageYield * cropCount + yieldOfCrops) / (cropCount + 1),
-				averageCultivationArea:
-					(averageCultivationArea * cropCount + areaUnderCultivation) /
-					(cropCount + 1),
-			};
-			return acc;
-		},
-		{},
-	);
+	// Data Analysis
+	const productionAnalytics = getProductionAnalysis(data);
+	const cropAnalytics = getCropAnalysis(data);
 	return (
 		<MantineProvider theme={theme}>
 			<Table stickyHeader>
