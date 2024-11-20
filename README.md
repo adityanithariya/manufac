@@ -46,13 +46,13 @@ yarn dev
 
 ## Project Screenshots
 
-### Crop Production Table
+### Crop Production Analytics Table
 
 ![Crop Production Analytics](./assets/table-1.png)
 
-### Agricultural Land Use Table
+### Crop Yield & Cultivation Area Analytics Table
 
-![Land Use Analytics](./assets/table-2.png)
+![Crop Yield & Cultivation Area Analytics](./assets/table-2.png)
 
 ## Key Analytics Features
 
